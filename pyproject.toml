@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "daily-leet"
+version = "0.1.0"
+description = ""
+authors = ["madmaxieee <76544194+madmaxieee@users.noreply.github.com>"]
+readme = "README.md"
+packages = [{include = "daily_leet"}]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+typer = {extras = ["all"], version = "^0.7.0"}
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
