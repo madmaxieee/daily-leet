@@ -3,15 +3,48 @@ import typer
 import requests
 import re
 
-from .languages import LangOptions, to_lang_slug
-from .fetch_data import set_cookie, get_code_snippet, get_daily_challenge_title_slug
+from .languages import LangOptions, LangSlugs, to_lang_slug
+from .fetch_data import (
+    set_cookie,
+    get_daily_challenge_title_slug,
+    get_code_snippet,
+    get_example_test_cases,
+)
 from .constants import LEETCODE_HOST
 from .utils import BasicSpinner
+from .create_files import create_files
 
 app = typer.Typer()
 
 lang_arg = typer.Argument(..., help="The language you want to use")
 
+def fetch_data_and_create_files(session: requests.Session, lang_slug: LangSlugs, title_slug: str) -> None:
+    try:
+        set_cookie(session)
+    except Exception as e:
+        raise typer.BadParameter(f"Failed to get cookie from {LEETCODE_HOST}, {e}")
+
+    with BasicSpinner() as progress:
+        progress.add_task(description="fetching code snippet...", total=None)
+        code_snippet = get_code_snippet(session, title_slug, lang_slug)
+        time = progress.get_time()
+        progress.print(f"[bold green]fetched code snippet in {time:.2f}s[/bold green]")
+
+    with BasicSpinner() as progress:
+        progress.add_task(description="fetching example test cases...", total=None)
+        example_test_cases = get_example_test_cases(session, title_slug)
+        time = progress.get_time()
+        progress.print(
+            f"[bold green]fetched example test cases in {time:.2f}s[/bold green]"
+        )
+
+    with BasicSpinner() as progress:
+        progress.add_task(description="creating files...", total=None)
+        create_files(lang_slug, title_slug, code_snippet, example_test_cases)
+        time = progress.get_time()
+        progress.print(f"[bold green]created files in {time:.2f}s[/bold green]")
+
+    typer.echo(f"Created files for {title_slug} in {lang_slug.value}")
 
 @app.command()
 def daily(language: LangOptions = lang_arg):
@@ -26,16 +59,16 @@ def daily(language: LangOptions = lang_arg):
         progress.add_task(description="fetching daily challenge...", total=None)
         title_slug = get_daily_challenge_title_slug(session)
         time = progress.get_time()
-        progress.print(f"[bold green]fetched daily challenge in {time:.2f}s[/bold green]")
+        progress.print(
+            f"[bold green]fetched daily challenge in {time:.2f}s[/bold green]"
+        )
 
     typer.echo(f"Today's problem is: {title_slug}")
 
-    with BasicSpinner() as progress:
-        progress.add_task(description="fetching code snippet...", total=None)
-        code_snippet = get_code_snippet(session, title_slug, to_lang_slug(language))
-        time = progress.get_time()
-        progress.print(f"[bold green]fetched code snippet in {time:.2f}s[/bold green]")
+    lang_slug = to_lang_slug(language)
+    fetch_data_and_create_files(session, lang_slug, title_slug)
 
+    session.close()
 
 @app.command()
 def new(
@@ -67,13 +100,10 @@ def new(
 
     session = requests.Session()
 
-    try:
-        set_cookie(session)
-    except Exception as e:
-        raise typer.BadParameter(f"Failed to get cookie from {LEETCODE_HOST}, {e}")
+    lang_slug = to_lang_slug(language)
+    fetch_data_and_create_files(session, lang_slug, title_slug)
 
-    code_snippet = get_code_snippet(session, title_slug, to_lang_slug(language))
-
+    session.close()
 
 if __name__ == "__main__":
     app()

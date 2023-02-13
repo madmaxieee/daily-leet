@@ -73,6 +73,26 @@ query questionContent($titleSlug: String!) {
 
     return json["data"]["question"]["content"]
 
+def get_example_test_cases(session: requests.Session, title_slug: str) -> str:
+    query = """
+query consolePanelConfig($titleSlug: String!) {
+  question(titleSlug: $titleSlug) {
+    questionId
+    questionFrontendId
+    questionTitle
+    exampleTestcaseList
+  }
+}
+    """
+    variables = {"titleSlug": title_slug}
+    data = {"query": query, "variables": variables}
+    res = session.post(f"{LEETCODE_HOST}/graphql/", json=data)
+    json = res.json()
+
+    if "errors" in json:
+        raise Exception(json["errors"])
+    
+    return json["data"]["question"]["exampleTestcaseList"]
 
 def get_daily_challenge_title_slug(session: requests.Session) -> str:
     res = session.get(f"{LEETCODE_HOST}/problemset/all/")
