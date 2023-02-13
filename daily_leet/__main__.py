@@ -91,7 +91,9 @@ def new(
     if problem_title != "":
         title_slug = problem_title.replace(" ", "-")
     elif url != "":
-        pattern = f"{LEETCODE_HOST}/problems/(.*)/?".replace("/", "\\/")
+        # trim the trailing slash
+        url = url.rstrip("/")
+        pattern = f"{LEETCODE_HOST}/problems/(.*)".replace("/", "\\/")
         match = re.search(pattern, url)
         if match:
             title_slug = match.group(1)
