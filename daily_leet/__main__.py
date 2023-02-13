@@ -2,6 +2,7 @@ import typer
 
 import requests
 import re
+from pathlib import Path
 
 from .languages import LangOptions, LangSlugs, to_lang_slug
 from .fetch_data import (
@@ -11,14 +12,14 @@ from .fetch_data import (
     get_example_test_cases,
 )
 from .constants import LEETCODE_HOST
-from .utils import BasicSpinner
+from .utils import BasicSpinner, open_in_browser, open_in_editor
 from .create_files import create_files
 
 app = typer.Typer()
 
 lang_arg = typer.Argument(..., help="The language you want to use")
 
-def fetch_data_and_create_files(session: requests.Session, lang_slug: LangSlugs, title_slug: str) -> None:
+def fetch_data_and_create_files(session: requests.Session, lang_slug: LangSlugs, title_slug: str) -> Path:
     try:
         set_cookie(session)
     except Exception as e:
@@ -40,11 +41,13 @@ def fetch_data_and_create_files(session: requests.Session, lang_slug: LangSlugs,
 
     with BasicSpinner() as progress:
         progress.add_task(description="creating files...", total=None)
-        create_files(lang_slug, title_slug, code_snippet, example_test_cases)
+        main_file_path = create_files(lang_slug, title_slug, code_snippet, example_test_cases)
         time = progress.get_time()
         progress.print(f"[bold green]created files in {time:.2f}s[/bold green]")
 
     typer.echo(f"Created files for {title_slug} in {lang_slug.value}")
+
+    return main_file_path
 
 @app.command()
 def daily(language: LangOptions = lang_arg):
@@ -66,9 +69,12 @@ def daily(language: LangOptions = lang_arg):
     typer.echo(f"Today's problem is: {title_slug}")
 
     lang_slug = to_lang_slug(language)
-    fetch_data_and_create_files(session, lang_slug, title_slug)
+    main_file_path = fetch_data_and_create_files(session, lang_slug, title_slug)
 
     session.close()
+
+    open_in_browser(f"{LEETCODE_HOST}/problems/{title_slug}")
+    open_in_editor(lang_slug, main_file_path)
 
 @app.command()
 def new(
@@ -103,9 +109,12 @@ def new(
     session = requests.Session()
 
     lang_slug = to_lang_slug(language)
-    fetch_data_and_create_files(session, lang_slug, title_slug)
+    main_file_path = fetch_data_and_create_files(session, lang_slug, title_slug)
 
     session.close()
+
+    open_in_browser(f"{LEETCODE_HOST}/problems/{title_slug}")
+    open_in_editor(lang_slug, main_file_path)
 
 if __name__ == "__main__":
     app()
