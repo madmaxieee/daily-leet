@@ -42,13 +42,10 @@ def fetch_data_and_create_files(
             f"[bold green]fetched example test cases in {time:.2f}s[/bold green]"
         )
 
-    with BasicSpinner() as progress:
-        progress.add_task(description="creating files...", total=None)
-        main_file_path = create_files(
-            lang_slug, title_slug, code_snippet, example_test_cases
-        )
-        time = progress.get_time()
-        progress.print(f"[bold green]created files in {time:.2f}s[/bold green]")
+    typer.echo(f"Creating files for {title_slug} in {lang_slug.value}...")
+    main_file_path = create_files(
+        lang_slug, title_slug, code_snippet, example_test_cases
+    )
 
     typer.echo(f"Created files for {title_slug} in {lang_slug.value}")
 

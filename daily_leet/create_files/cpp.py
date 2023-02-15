@@ -32,8 +32,8 @@ run: main
     ./main
 """
 
-def create_cpp_file(title_slug: str, code_snippet: str, example_test_case: str) -> Path:
-    example_test_case_display = get_displayed_test_case(example_test_case, INDENT, COMMENT)
+def create_cpp_file(title_slug: str, code_snippet: str, example_test_cases: list[str]) -> Path:
+    example_test_case_display = get_displayed_test_case(example_test_cases, INDENT, COMMENT)
     code = BOILERPLATE % (title_slug, code_snippet, example_test_case_display)
 
     lang_dir = create_lang_dir(LANG)

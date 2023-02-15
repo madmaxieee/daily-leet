@@ -1,7 +1,8 @@
 from pathlib import Path
 import subprocess
+import re
 
-from .utils import get_displayed_test_case, get_displayed_time, create_lang_dir
+from .utils import get_displayed_time, create_lang_dir
 from ..languages import LangSlugs
 
 LANG = LangSlugs.RUST
@@ -19,9 +20,9 @@ fn main() {{
 """
 
 
-def create_rust_file(title_slug: str, code_snippet: str, example_test_case: str) -> Path:
-    example_test_case_display = get_displayed_test_case(example_test_case, INDENT, COMMENT)
-    code = BOILERPLATE % (title_slug, code_snippet, example_test_case_display)
+def create_rust_file(title_slug: str, code_snippet: str, example_test_cases: list[str]) -> Path:
+    parsed_example_test_cases = parse_example_test_cases(code_snippet, example_test_cases)
+    code = BOILERPLATE % (title_slug, code_snippet, parsed_example_test_cases)
 
     lang_dir = create_lang_dir(LANG)
 
@@ -35,4 +36,51 @@ def create_rust_file(title_slug: str, code_snippet: str, example_test_case: str)
         f.write(code)
 
     return main_file_path
+
+def parse_example_test_cases(code_snippet: str, example_test_cases: list[str]) -> str:
+    # find the name and data type of each input and create a variable for it
+
+    variable_names: list[str] = []
+    variable_types: list[str] = []
+    function_name = ""
+    for line in code_snippet.splitlines():
+        if line.strip().startswith("pub fn"):
+            function_name = re.findall(r"fn (\w+)\(", line)[0]
+            variables = re.findall(r"\((.*?)\)", line)[0].split(", ")
+            variable_names = list(map(lambda x: x.split(": ")[0], variables))
+            variable_types = list(map(lambda x: x.split(": ")[1], variables))
+            break
+
+    variable_values = list(map(lambda x: x.split("\n"), example_test_cases))
+
+    call_function = f"let result = Solution::{function_name}({', '.join(list(variable_names))});"
+    print_result = f"println!(\"{{:?}}\", result);"
+
+    lines = []
+    for values in variable_values:
+        for var_name, var_type, var_value in zip(variable_names, variable_types, values):
+            lines.append(f"let {var_name} = {create_variable(var_type, var_value)};")
+
+        lines.append(call_function)
+        lines.append(print_result)
+        lines.append("")
+
+
+    return "\n".join(lines)
+
+def create_variable(var_type: str, var_value: str) -> str:
+
+    number_types = ["i32", "i64", "f32", "f64"]
+    if var_type in number_types:
+        return var_value
+
+    if var_type == "String":
+        return f'{var_value}.to_string()'
+
+    # match for Vec<{number_type}>
+    if re.match(r"Vec<\w+>", var_type):
+        vec_type = re.findall(r"Vec<(\w+)>", var_type)[0]
+        return f"vec!{create_variable(vec_type, var_value)}".replace(",", ", ")
+
+    raise NotImplementedError(f"Unknown variable type: {var_type}")
 

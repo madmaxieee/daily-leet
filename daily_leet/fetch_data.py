@@ -73,7 +73,7 @@ query questionContent($titleSlug: String!) {
 
     return json["data"]["question"]["content"]
 
-def get_example_test_cases(session: requests.Session, title_slug: str) -> str:
+def get_example_test_cases(session: requests.Session, title_slug: str) -> list[str]:
     query = """
 query consolePanelConfig($titleSlug: String!) {
   question(titleSlug: $titleSlug) {
@@ -91,7 +91,7 @@ query consolePanelConfig($titleSlug: String!) {
 
     if "errors" in json:
         raise Exception(json["errors"])
-    
+
     return json["data"]["question"]["exampleTestcaseList"]
 
 def get_daily_challenge_title_slug(session: requests.Session) -> str:
@@ -125,7 +125,7 @@ def get_daily_challenge_title_slug(session: requests.Session) -> str:
     for challenge in challenges:
         if challenge["date"] == today:
             return challenge["question"]["titleSlug"]
-      
+
     raise Exception("Failed to find challenge for today")
 
 
