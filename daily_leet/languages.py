@@ -1,9 +1,9 @@
 from enum import Enum
 
-# create a enum class for languages
 class LangOptions(str, Enum):
     PYTHON = "python"
-    PY = "python"
+    PYTHON3 = "python3"
+    PY = "py"
 
     CPP = "cpp"
     C_PLUS_PLUS = "c++"
@@ -12,6 +12,7 @@ class LangOptions(str, Enum):
     GOLANG = "golang"
 
     RUST = "rust"
+
 
 class LangSlugs(str, Enum):
     CPP = "cpp"
@@ -34,17 +35,16 @@ class LangSlugs(str, Enum):
     ELIXIR = "elixir"
     DART = "dart"
 
+
 def to_lang_slug(language: LangOptions) -> LangSlugs:
     LANG_SLUG_MAP = {
         LangOptions.PYTHON: LangSlugs.PYTHON3,
+        LangOptions.PYTHON3: LangSlugs.PYTHON3,
         LangOptions.PY: LangSlugs.PYTHON3,
-
         LangOptions.CPP: LangSlugs.CPP,
         LangOptions.C_PLUS_PLUS: LangSlugs.CPP,
-
         LangOptions.GO: LangSlugs.GOLANG,
         LangOptions.GOLANG: LangSlugs.GOLANG,
-
         LangOptions.RUST: LangSlugs.RUST,
     }
 

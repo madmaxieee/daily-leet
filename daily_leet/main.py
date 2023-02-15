@@ -19,7 +19,10 @@ app = typer.Typer()
 
 lang_arg = typer.Argument(..., help="The language you want to use")
 
-def fetch_data_and_create_files(session: requests.Session, lang_slug: LangSlugs, title_slug: str) -> Path:
+
+def fetch_data_and_create_files(
+    session: requests.Session, lang_slug: LangSlugs, title_slug: str
+) -> Path:
     try:
         set_cookie(session)
     except Exception as e:
@@ -41,7 +44,9 @@ def fetch_data_and_create_files(session: requests.Session, lang_slug: LangSlugs,
 
     with BasicSpinner() as progress:
         progress.add_task(description="creating files...", total=None)
-        main_file_path = create_files(lang_slug, title_slug, code_snippet, example_test_cases)
+        main_file_path = create_files(
+            lang_slug, title_slug, code_snippet, example_test_cases
+        )
         time = progress.get_time()
         progress.print(f"[bold green]created files in {time:.2f}s[/bold green]")
 
@@ -49,8 +54,13 @@ def fetch_data_and_create_files(session: requests.Session, lang_slug: LangSlugs,
 
     return main_file_path
 
+
 @app.command()
 def daily(language: LangOptions = lang_arg):
+    """
+    Fetch today's daily challenge and create files for it
+    """
+
     session = requests.Session()
 
     try:
@@ -76,6 +86,7 @@ def daily(language: LangOptions = lang_arg):
     open_in_browser(f"{LEETCODE_HOST}/problems/{title_slug}")
     open_in_editor(lang_slug, main_file_path)
 
+
 @app.command()
 def new(
     language: LangOptions = lang_arg,
@@ -89,6 +100,10 @@ def new(
         "", "-t", "--title", help="The title of the problem, separated by '-' or ' '"
     ),
 ):
+    """
+    Fetch data from a problem's description page and create files for it
+    """
+
     # at least one of url or problem_name must be provided
     if not url and not problem_title:
         raise typer.BadParameter("Must provide either url or problem_name")
@@ -115,6 +130,7 @@ def new(
 
     open_in_browser(f"{LEETCODE_HOST}/problems/{title_slug}")
     open_in_editor(lang_slug, main_file_path)
+
 
 if __name__ == "__main__":
     app()
