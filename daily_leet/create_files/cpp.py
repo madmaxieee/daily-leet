@@ -1,8 +1,9 @@
 from pathlib import Path
 
-from .utils import get_displayed_test_case, get_displayed_time
+from .utils import get_displayed_test_case, get_displayed_time, create_lang_dir
+from ..languages import LangSlugs
 
-LANG = "cpp"
+LANG = LangSlugs.CPP
 COMMENT = "//"
 INDENT = "    "
 BOILERPLATE = f"""// %s {get_displayed_time()}
@@ -35,8 +36,7 @@ def create_cpp_file(title_slug: str, code_snippet: str, example_test_case: str) 
     example_test_case_display = get_displayed_test_case(example_test_case, INDENT, COMMENT)
     code = BOILERPLATE % (title_slug, code_snippet, example_test_case_display)
 
-    lang_dir = Path(LANG)
-    lang_dir.mkdir(exist_ok=True)
+    lang_dir = create_lang_dir(LANG)
 
     project_dir = lang_dir / title_slug
     project_dir.mkdir(exist_ok=True)
