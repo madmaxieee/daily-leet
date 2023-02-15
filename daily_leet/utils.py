@@ -6,7 +6,7 @@ import subprocess
 import webbrowser
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
-from .languages import LangSlugs
+from .language_support.types import LangSlugs
 
 def BasicSpinner(transient=True):
     return Progress(

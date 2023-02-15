@@ -4,7 +4,7 @@ import requests
 import re
 from pathlib import Path
 
-from .languages import LangOptions, LangSlugs, to_lang_slug
+from .language_support.types import LangOptions, LangSlugs, to_lang_slug
 from .fetch_data import (
     set_cookie,
     get_daily_challenge_title_slug,
@@ -13,7 +13,7 @@ from .fetch_data import (
 )
 from .constants import LEETCODE_HOST
 from .utils import BasicSpinner, open_in_browser, open_in_editor
-from .create_files import create_files
+from .language_support import create_files
 
 app = typer.Typer()
 

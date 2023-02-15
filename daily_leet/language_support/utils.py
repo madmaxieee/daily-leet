@@ -3,7 +3,7 @@ import typer
 from pathlib import Path
 import datetime
 
-from ..languages import LangSlugs
+from .types import LangSlugs
 
 def get_displayed_test_case(example_test_cases: list[str], indent: str, comment: str) -> str:
     example_test_case_list = [case.replace("\n", " ") for case in example_test_cases]

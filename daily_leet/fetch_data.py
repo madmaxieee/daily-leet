@@ -7,7 +7,7 @@ import json
 import datetime
 
 from .constants import LEETCODE_HOST
-from .languages import LangSlugs
+from .language_support.types import LangSlugs
 
 
 def set_cookie(session: requests.Session):

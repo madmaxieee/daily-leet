@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from .utils import get_displayed_test_case, get_displayed_time, create_lang_dir
-from ..languages import LangSlugs
+from .types import LangSlugs
 
 LANG = LangSlugs.CPP
 COMMENT = "//"

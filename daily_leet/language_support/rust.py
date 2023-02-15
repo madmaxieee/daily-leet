@@ -3,7 +3,7 @@ import subprocess
 import re
 
 from .utils import get_displayed_time, create_lang_dir
-from ..languages import LangSlugs
+from .types import LangSlugs
 
 LANG = LangSlugs.RUST
 COMMENT = "//"
@@ -66,7 +66,7 @@ def parse_example_test_cases(code_snippet: str, example_test_cases: list[str]) -
         lines.append("")
 
 
-    return "\n".join(lines)
+    return "\n".join(map(lambda line: INDENT + line if line else "", lines))
 
 def create_variable(var_type: str, var_value: str) -> str:
 
