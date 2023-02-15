@@ -7,7 +7,7 @@ readme = "README.md"
 packages = [{include = "daily_leet"}]
 
 [tool.poetry.scripts]
-daily-leet = "daily_leet.main:app"
+leetcode = "daily_leet.main:app"
 
 [tool.poetry.dependencies]
 python = "^3.9"
