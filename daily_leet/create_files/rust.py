@@ -6,7 +6,7 @@ from .utils import get_displayed_test_case, get_displayed_time
 LANG = "rust"
 COMMENT = "//"
 INDENT = "    "
-BOILERPLATE = f"""// %s {get_displayed_time}
+BOILERPLATE = f"""// %s {get_displayed_time()}
 
 struct Solution;
 

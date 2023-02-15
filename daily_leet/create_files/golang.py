@@ -5,7 +5,7 @@ from .utils import get_displayed_test_case, get_displayed_time
 LANG = "golang"
 COMMENT = "//"
 INDENT = "    "
-BOILERPLATE = f"""// %s {get_displayed_time}
+BOILERPLATE = f"""// %s {get_displayed_time()}
 
 package main
 
