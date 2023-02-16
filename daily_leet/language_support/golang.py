@@ -28,6 +28,16 @@ CONSTRUCTORS = {
         "input_type": "[]int",
         "function_name": "makeTree",
         "code": """
+func shift(queue *[]*TreeNode) *TreeNode {
+	if len(*queue) == 0 {
+		return nil
+	}
+
+	result := (*queue)[0]
+	*queue = (*queue)[1:]
+	return result
+}
+
 func makeTreeNode(data []int) *TreeNode {
 	root := &TreeNode{Val: data[0]}
 	data = data[1:]
