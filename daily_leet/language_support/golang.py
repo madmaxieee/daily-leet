@@ -8,6 +8,7 @@ LANG = LangSlugs.GOLANG
 COMMENT = "//"
 INDENT = "\t"
 NULL = "nil"
+NIL_NODE = -10000000
 BOILERPLATE = f"""// %s {get_displayed_time()}
 
 package main
@@ -28,6 +29,8 @@ CONSTRUCTORS = {
         "input_type": "[]int",
         "function_name": "makeTree",
         "code": """
+const NIL_NODE = %s // this is a special value outside the range of the problem that represents a nil node
+
 func shift(queue *[]*TreeNode) *TreeNode {
 	if len(*queue) == 0 {
 		return nil
@@ -38,7 +41,7 @@ func shift(queue *[]*TreeNode) *TreeNode {
 	return result
 }
 
-func makeTreeNode(data []int) *TreeNode {
+func makeTree(data []int) *TreeNode {
 	root := &TreeNode{Val: data[0]}
 	data = data[1:]
 	queue := []*TreeNode{root}
@@ -71,7 +74,8 @@ func makeTreeNode(data []int) *TreeNode {
 
 	return root
 }
-""",
+"""
+        % NIL_NODE,
     }
 }
 
@@ -120,10 +124,18 @@ def parse_example_test_cases(code_snippets: str, example_test_cases: list[str]) 
     print_result = "fmt.Println(result)"
 
     lines = []
-    for values in variable_values:
+    for i, values in enumerate(variable_values):
         for name, type_, value in zip(variable_names, variable_types, values):
-            lines.append(f"{name} := {create_variable(type_, value)}")
-        lines.append(call_function)
+            new_line = f"{name} := {create_variable(type_, value)}"
+            if i == 0:
+                lines.append(new_line)
+            else:
+                lines.append(new_line.replace(" := ", " = "))
+
+        if i == 0:
+            lines.append(call_function)
+        else:
+            lines.append(call_function.replace(" := ", " = "))
         lines.append(print_result)
         lines.append("")
 
@@ -131,9 +143,6 @@ def parse_example_test_cases(code_snippets: str, example_test_cases: list[str]) 
 
 
 def create_variable(var_type: str, var_value: str) -> str:
-    # replace "null" with NULL
-    var_value = var_value.replace("null", NULL)
-
     simple_types = ["int", "float64", "string", "bool"]
     if var_type in simple_types:
         return var_value
@@ -146,6 +155,8 @@ def create_variable(var_type: str, var_value: str) -> str:
 
     # create variable of special types
     if var_type in CONSTRUCTORS:
+        # replace "null" with NULL
+        var_value = var_value.replace("null", "NIL_NODE")
         constructor = CONSTRUCTORS[var_type]["function_name"]
         constructor_input_type = CONSTRUCTORS[var_type]["input_type"]
         constructor_input = create_variable(constructor_input_type, var_value)
