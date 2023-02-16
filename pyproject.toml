@@ -12,7 +12,6 @@ leetcode = "daily_leet.main:app"
 [tool.poetry.dependencies]
 python = "^3.9"
 typer = {extras = ["all"], version = "^0.7.0"}
-shellingham = "^1.5.1"
 requests = "^2.28.2"
 
 [tool.poetry.dev-dependencies]

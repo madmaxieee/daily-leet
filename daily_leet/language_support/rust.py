@@ -20,8 +20,12 @@ fn main() {{
 """
 
 
-def create_rust_file(title_slug: str, code_snippet: str, example_test_cases: list[str]) -> Path:
-    parsed_example_test_cases = parse_example_test_cases(code_snippet, example_test_cases)
+def create_rust_file(
+    title_slug: str, code_snippet: str, example_test_cases: list[str]
+) -> Path:
+    parsed_example_test_cases = parse_example_test_cases(
+        code_snippet, example_test_cases
+    )
     code = BOILERPLATE % (title_slug, code_snippet, parsed_example_test_cases)
 
     lang_dir = create_lang_dir(LANG)
@@ -36,6 +40,7 @@ def create_rust_file(title_slug: str, code_snippet: str, example_test_cases: lis
         f.write(code)
 
     return main_file_path
+
 
 def parse_example_test_cases(code_snippet: str, example_test_cases: list[str]) -> str:
     # find the name and data type of each input and create a variable for it
@@ -53,34 +58,51 @@ def parse_example_test_cases(code_snippet: str, example_test_cases: list[str]) -
 
     variable_values = list(map(lambda x: x.split("\n"), example_test_cases))
 
-    call_function = f"let result = Solution::{function_name}({', '.join(list(variable_names))});"
-    print_result = f"println!(\"{{:?}}\", result);"
+    call_function = (
+        f"let result = Solution::{function_name}({', '.join(list(variable_names))});"
+    )
+    print_result = f'println!("{{:?}}", result);'
 
     lines = []
     for values in variable_values:
-        for var_name, var_type, var_value in zip(variable_names, variable_types, values):
+        for var_name, var_type, var_value in zip(
+            variable_names, variable_types, values
+        ):
             lines.append(f"let {var_name} = {create_variable(var_type, var_value)};")
 
         lines.append(call_function)
         lines.append(print_result)
         lines.append("")
 
+    return "\n".join(map(lambda line: (INDENT if line else "") + line, lines))
 
-    return "\n".join(map(lambda line: INDENT + line if line else "", lines))
 
 def create_variable(var_type: str, var_value: str) -> str:
-
-    number_types = ["i32", "i64", "f32", "f64"]
+    number_types = [
+        "i8",
+        "i16",
+        "i32",
+        "i64",
+        "i128",
+        "isize",
+        "u8",
+        "u16",
+        "u32",
+        "u64",
+        "u128",
+        "usize",
+        "f32",
+        "f64",
+    ]
     if var_type in number_types:
         return var_value
 
     if var_type == "String":
-        return f'{var_value}.to_string()'
+        return f"{var_value}.to_string()"
 
     # match for Vec<{number_type}>
     if re.match(r"Vec<\w+>", var_type):
         vec_type = re.findall(r"Vec<(\w+)>", var_type)[0]
         return f"vec!{create_variable(vec_type, var_value)}".replace(",", ", ")
 
-    raise NotImplementedError(f"Unknown variable type: {var_type}")
-
+    raise NotImplementedError(f"Type {var_type} not implemented")

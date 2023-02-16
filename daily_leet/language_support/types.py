@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class LangOptions(str, Enum):
     PYTHON = "python"
     PYTHON3 = "python3"

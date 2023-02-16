@@ -8,6 +8,7 @@ from rich.progress import Progress, SpinnerColumn, TextColumn
 
 from .language_support.types import LangSlugs
 
+
 def BasicSpinner(transient=True):
     return Progress(
         SpinnerColumn(),
@@ -15,8 +16,10 @@ def BasicSpinner(transient=True):
         transient=transient,
     )
 
+
 def open_in_browser(url: str) -> None:
     webbrowser.open(url)
+
 
 def open_in_editor(lang_slug: LangSlugs, main_file_path: Path) -> None:
     subprocess.run(["code", lang_slug.value])
