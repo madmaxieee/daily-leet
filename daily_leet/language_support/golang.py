@@ -98,7 +98,7 @@ def parse_example_test_cases(code_snippets: str, example_test_cases: list[str]) 
     function_name = ""
     for line in code_snippets.splitlines():
         if line.strip().startswith("func"):
-            function_name = line.split(" ")[1]
+            function_name = re.findall(r"func (\w+)\(", line)[0]
             variables = line.split("(")[1].split(")")[0].split(", ")
             variable_names = list(map(lambda x: x.split(" ")[0], variables))
             variable_types = list(map(lambda x: x.split(" ")[1], variables))
@@ -106,7 +106,7 @@ def parse_example_test_cases(code_snippets: str, example_test_cases: list[str]) 
 
     variable_values = list(map(lambda x: x.split("\n"), example_test_cases))
 
-    call_function = f"result := {function_name}({', '.join(list(variable_names))})"
+    call_function = f"result := {function_name}({', '.join(variable_names)})"
     print_result = "fmt.Println(result)"
 
     lines = []
