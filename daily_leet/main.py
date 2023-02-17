@@ -55,7 +55,7 @@ def fetch_data_and_create_files(
 @app.command()
 def daily(language: LangOptions = lang_arg):
     """
-    Fetch today's daily challenge and create files for it
+    Fetch today's daily challenge and create files for it, then open the problem page in browser and open the main file in editor
     """
 
     session = requests.Session()
@@ -91,14 +91,21 @@ def new(
         "",
         "-u",
         "--url",
-        help="The url to fetch data from, usually a problem's description page",
+        help="The url to fetch data from, usually a problem's description page. "
+        + "e.g. https://leetcode.com/problems/two-sum/. "
+        + "You need to provide either url or problem title.",
     ),
     problem_title: str = typer.Option(
-        "", "-t", "--title", help="The title of the problem, separated by '-' or ' '"
+        "",
+        "-t",
+        "--title",
+        help="The title of the problem, separated by '-' or ' '. "
+        + "e.g. two-sum. "
+        + "You need to provide either url or problem title.",
     ),
 ):
     """
-    Fetch data from a problem's description page and create files for it
+    Fetch data from a problem's description page and create files for it, then open the problem page in browser and open the main file in editor
     """
 
     # at least one of url or problem_name must be provided
