@@ -1,3 +1,5 @@
+import typer
+
 from pathlib import Path
 import re
 
@@ -84,9 +86,17 @@ def create_go_file(
     title_slug: str, code_snippet: str, example_test_cases: list[str]
 ) -> Path:
     injected_code_snippet = inject_constructors(code_snippet)
-    parsed_example_test_cases = parse_example_test_cases(
-        code_snippet, example_test_cases
-    )
+    try:
+        parsed_example_test_cases = parse_example_test_cases(
+            code_snippet, example_test_cases
+        )
+    except Exception as e:
+        typer.echo(f"Error parsing example test cases for {title_slug}")
+        typer.echo("Rolling back to default behavior...")
+        parsed_example_test_cases = get_displayed_test_case(
+            example_test_cases, INDENT, COMMENT
+        )
+
     code = BOILERPLATE % (title_slug, injected_code_snippet, parsed_example_test_cases)
     # replace "    " with INDENT
     code = code.replace("    ", INDENT)

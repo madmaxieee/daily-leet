@@ -1,8 +1,10 @@
+import typer
+
 from pathlib import Path
 import subprocess
 import re
 
-from .utils import get_displayed_time, create_lang_dir
+from .utils import get_displayed_time, create_lang_dir, get_displayed_test_case
 from .types import LangSlugs
 
 LANG = LangSlugs.RUST
@@ -23,9 +25,17 @@ fn main() {{
 def create_rust_file(
     title_slug: str, code_snippet: str, example_test_cases: list[str]
 ) -> Path:
-    parsed_example_test_cases = parse_example_test_cases(
-        code_snippet, example_test_cases
-    )
+    try:
+        parsed_example_test_cases = parse_example_test_cases(
+            code_snippet, example_test_cases
+        )
+    except Exception as e:
+        typer.echo(f"Error parsing example test cases for {title_slug}")
+        typer.echo("Rolling back to default behavior...")
+        parsed_example_test_cases = get_displayed_test_case(
+            example_test_cases, INDENT, COMMENT
+        )
+
     code = BOILERPLATE % (title_slug, code_snippet, parsed_example_test_cases)
 
     lang_dir = create_lang_dir(LANG)

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "daily-leet"
-version = "0.2.3"
+version = "0.2.4"
 description = ""
 authors = ["madmaxieee <76544194+madmaxieee@users.noreply.github.com>"]
 readme = "README.md"

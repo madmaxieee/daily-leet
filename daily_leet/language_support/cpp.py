@@ -23,13 +23,13 @@ MAKEFILE = """CC = g++
 all: main
 
 main: main.cpp
-    $(CC) -o main main.cpp
+\t$(CC) -o main main.cpp
 
 clean:
-    rm main
+\trm main
 
 run: main
-    ./main
+\t./main
 """
 
 
