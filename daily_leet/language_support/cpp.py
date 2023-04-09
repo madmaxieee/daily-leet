@@ -18,12 +18,13 @@ int main() {{
 }}
 """
 
-MAKEFILE = """CC = g++
+MAKEFILE = """CC = g++ --std=c++17
+# SANITIZE = -fsanitize=address -fsanitize=undefined -fno-sanitize-recover=all -fsanitize=float-divide-by-zero -fsanitize=float-cast-overflow -fno-sanitize=null -fno-sanitize=alignment
 
 all: main
 
 main: main.cpp
-\t$(CC) -o main main.cpp
+\t$(CC) $(SANITIZE) -o main main.cpp
 
 clean:
 \trm main

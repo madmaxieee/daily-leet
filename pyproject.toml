@@ -1,17 +1,17 @@
 [tool.poetry]
 name = "daily-leet"
-version = "0.2.5"
+version = "0.2.6"
 description = ""
 authors = ["madmaxieee <76544194+madmaxieee@users.noreply.github.com>"]
 readme = "README.md"
-packages = [{include = "daily_leet"}]
+packages = [{ include = "daily_leet" }]
 
 [tool.poetry.scripts]
 leetcode = "daily_leet.main:app"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-typer = {extras = ["all"], version = "^0.7.0"}
+typer = { extras = ["all"], version = "^0.7.0" }
 requests = "^2.28.2"
 
 [tool.poetry.dev-dependencies]
