@@ -29,17 +29,21 @@ def fetch_data_and_create_files(
         raise typer.BadParameter(f"Failed to get cookie from {LEETCODE_HOST}, {e}")
 
     with BasicSpinner() as progress:
+        start_time = progress.get_time()
         progress.add_task(description="fetching code snippet...", total=None)
         code_snippet = get_code_snippet(session, title_slug, lang_slug)
-        time = progress.get_time()
-        progress.print(f"[bold green]fetched code snippet in {time:.2f}s[/bold green]")
+        elapsed_time = progress.get_time() - start_time
+        progress.print(
+            f"[bold green]fetched code snippet in {elapsed_time:.2f}s[/bold green]"
+        )
 
     with BasicSpinner() as progress:
+        start_time = progress.get_time()
         progress.add_task(description="fetching example test cases...", total=None)
         example_test_cases = get_example_test_cases(session, title_slug)
-        time = progress.get_time()
+        elapsed_time = progress.get_time() - start_time
         progress.print(
-            f"[bold green]fetched example test cases in {time:.2f}s[/bold green]"
+            f"[bold green]fetched example test cases in {elapsed_time:.2f}s[/bold green]"
         )
 
     typer.echo(f"Creating files for {title_slug} in {lang_slug.value}...")
@@ -66,11 +70,12 @@ def daily(language: LangOptions = lang_arg):
         raise typer.BadParameter(f"Failed to get cookie from {LEETCODE_HOST}, {e}")
 
     with BasicSpinner() as progress:
+        start_time = progress.get_time()
         progress.add_task(description="fetching daily challenge...", total=None)
         title_slug = get_daily_challenge_title_slug(session)
-        time = progress.get_time()
+        elapsed_time = progress.get_time() - start_time
         progress.print(
-            f"[bold green]fetched daily challenge in {time:.2f}s[/bold green]"
+            f"[bold green]fetched daily challenge in {elapsed_time:.2f}s[/bold green]"
         )
 
     typer.echo(f"Today's problem is: {title_slug}")
